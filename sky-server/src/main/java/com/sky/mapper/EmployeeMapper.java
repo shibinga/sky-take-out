@@ -39,5 +39,7 @@ public interface EmployeeMapper {
      * @param employee
      * @return
      */
-    void changeStatus(Employee employee);
+    void update(Employee employee);
+    @Select("select * from employee where id = #{id}")
+    Employee getBtId(Integer id);
 }
