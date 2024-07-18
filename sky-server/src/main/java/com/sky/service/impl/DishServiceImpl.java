@@ -8,10 +8,13 @@ import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.entity.Setmeal;
+import com.sky.entity.SetmealDish;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
+import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
@@ -20,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,6 +34,8 @@ public class DishServiceImpl implements DishService {
     private DishFlavorMapper dishFlavorMapper;
     @Autowired
     private SetmealDishMapper setmealDishMapper;
+    @Autowired
+    private SetmealMapper setmealMapper;
 
     /**
      * 新增菜品
@@ -89,6 +95,7 @@ public class DishServiceImpl implements DishService {
         List<Dish> dishes = dishMapper.getByIds(ids);
         if (dishes != null && dishes.size() > 0){
             for (Dish dish : dishes) {
+                //判断是否处于起售状态
                 if (dish.getStatus() == StatusConstant.ENABLE){
                     throw new DeletionNotAllowedException(dish.getName()+MessageConstant.DISH_ON_SALE);
                 }
@@ -127,6 +134,10 @@ public class DishServiceImpl implements DishService {
         return dishVO;
     }
 
+    /**
+     * 修改菜品
+     * @param dishDTO
+     */
     @Override
     public void update(DishDTO dishDTO) {
         Dish dish = new Dish();
@@ -145,12 +156,39 @@ public class DishServiceImpl implements DishService {
 
     }
 
+    /**
+     * 修改状态
+     * @param status
+     * @param id
+     */
     @Override
+    @Transactional
     public void changeStatus(Integer status, Long id) {
         Dish dish = Dish.builder()
                 .status(status)
                 .id(id)
                 .build();
         dishMapper.update(dish);
+
+        if (status == StatusConstant.DISABLE){
+            List<SetmealDish> setmealDishes = setmealDishMapper.getSetmealIdsByDishId(id);
+            if (setmealDishes != null && setmealDishes.size() > 0){
+                setmealDishes.forEach(setmealDish -> {
+                    Setmeal setmeal = Setmeal.builder()
+                            .status(status)
+                            .id(setmealDish.getSetmealId())
+                            .build();
+                    setmealMapper.update(setmeal);
+                });
+            }
+        }
+    }
+
+    @Override
+    public List<Dish> list(DishDTO dishDTO) {
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO,dish);
+        List<Dish> list = dishMapper.list(dish);
+        return list;
     }
 }

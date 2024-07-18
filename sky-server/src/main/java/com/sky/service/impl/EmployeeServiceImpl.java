@@ -13,6 +13,7 @@ import com.sky.dto.PasswordEditDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
+import com.sky.exception.PasswordEditFailedException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.result.PageResult;
@@ -126,6 +127,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeMapper.update(employee);
     }
 
+    /**
+     * 修改密码
+     * @param passwordEditDTO
+     */
     @Override
     public void editPsw(PasswordEditDTO passwordEditDTO) {
 
@@ -134,10 +139,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee employee = employeeMapper.getBtId(BaseContext.getCurrentId());
         if(!oldPsw.equals(employee.getPassword())){
-            throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
+            throw new PasswordEditFailedException(MessageConstant.PASSWORD_ERROR);
         }
         if (oldPsw.equals(newPsw)){
-            throw new PasswordErrorException(MessageConstant.PASSWORD_EQUAL);
+            throw new PasswordEditFailedException(MessageConstant.PASSWORD_EQUAL);
         }
 
         employee.setPassword(newPsw);
