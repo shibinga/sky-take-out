@@ -1,7 +1,7 @@
 package com.sky.constant;
 
 /**
- * 状态常量，启用或者禁用
+ * 状态名, 状态常量，启用或者禁用
  */
 public class StatusConstant {
 
@@ -10,4 +10,7 @@ public class StatusConstant {
 
     //禁用
     public static final Integer DISABLE = 0;
+
+    //店铺状态表示
+    public static final String SHOP_STATUS = "SHOP_STATUS";
 }

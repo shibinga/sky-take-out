@@ -11,3 +11,7 @@ sky:
     access-key-id: LTAI5t9ASPc8HcBUVtd28B51
     access-key-secret: o7BR2Xp7021gtgzgwsfumAbQbwcjIz
     bucket-name: web-luoluo
+  redis:
+    host: localhost
+    port: 6379
+    password:
