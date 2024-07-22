@@ -50,5 +50,18 @@ public interface DishService {
      */
     void changeStatus(Integer status, Long id);
 
+    /**
+     * 根据分类返回菜品
+     * @param dishDTO
+     * @return
+     */
     List<Dish> list(DishDTO dishDTO);
+
+
+    /**
+     * 根据分类id查询菜品
+     * @param dish
+     * @return
+     */
+    List<DishVO> listWithFlavor(Dish dish);
 }
