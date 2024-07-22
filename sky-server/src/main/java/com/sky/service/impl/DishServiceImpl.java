@@ -20,11 +20,13 @@ import com.sky.service.DishService;
 import com.sky.vo.DishVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class DishServiceImpl implements DishService {
@@ -36,6 +38,8 @@ public class DishServiceImpl implements DishService {
     private SetmealDishMapper setmealDishMapper;
     @Autowired
     private SetmealMapper setmealMapper;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 新增菜品
@@ -140,6 +144,8 @@ public class DishServiceImpl implements DishService {
      */
     @Override
     public void update(DishDTO dishDTO) {
+        String keys = "dish_*";
+        cleanCache(keys);
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO,dish);
         dishMapper.update(dish);
@@ -164,6 +170,8 @@ public class DishServiceImpl implements DishService {
     @Override
     @Transactional
     public void changeStatus(Integer status, Long id) {
+        String keys = "dish_*";
+        cleanCache(keys);
         Dish dish = Dish.builder()
                 .status(status)
                 .id(id)
@@ -220,5 +228,10 @@ public class DishServiceImpl implements DishService {
         }
 
         return dishVOList;
+    }
+
+    public void cleanCache(String pattern){
+        Set keys = redisTemplate.keys(pattern);
+        redisTemplate.delete(keys);
     }
 }
