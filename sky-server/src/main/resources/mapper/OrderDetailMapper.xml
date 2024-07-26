@@ -11,4 +11,19 @@
             (#{od.name}, #{od.image}, #{od.orderId}, #{od.dishId}, #{od.setmealId}, #{od.dishFlavor}, #{od.number}, #{od.amount})
         </foreach>
     </insert>
+    <select id="SalesTop10" resultType="com.sky.dto.GoodsSalesDTO">
+        SELECT order_detail.`name`, SUM(order_detail.`number`) number
+        FROM order_detail
+        JOIN orders ON order_detail.order_id = orders.id
+        WHERE  `status` = 5
+        <if test="beginTime != null">
+            AND order_time &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null">
+            AND order_time &lt;= #{endTime}
+        </if>
+        GROUP BY order_detail.`name`
+        ORDER BY number DESC
+        LIMIT 10
+    </select>
 </mapper>
