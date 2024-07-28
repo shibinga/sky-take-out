@@ -67,7 +67,7 @@
         </where>
         order by order_time desc
     </select>
-    <select id="sunByMap" resultType="java.math.BigDecimal">
+    <select id="sumByMap" resultType="java.lang.Double">
         select sum(amount) from orders
         <where>
             <if test="begin != null">
@@ -81,7 +81,7 @@
             </if>
         </where>
     </select>
-    <select id="sunOrderByMap" resultType="java.lang.Integer">
+    <select id="sumOrderByMap" resultType="java.lang.Integer">
         select count(id) from orders
         <where>
             <if test="begin != null">
